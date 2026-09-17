@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFetch } from '@vueuse/core'
+import { API_BASE_URL } from '@/config'
+
 
 const username = ref('')
 const password = ref('')
@@ -10,7 +12,8 @@ const router = useRouter()
 
 async function login() {
   try {
-    const { data, statusCode } = await useFetch('http://localhost:8000/token', {
+    const { data, statusCode } = await useFetch(`${API_BASE_URL}/token`, {
+
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },

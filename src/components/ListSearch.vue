@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch, onMounted, nextTick } from 'vue'
 import { useFetch } from '@vueuse/core'
+import { API_BASE_URL } from '@/config'
 
 const offset_option = ref('')
 const types_option = ref('')
@@ -35,7 +36,8 @@ let timer = null
 let globalOffset = 0
 let globalType = ''
 
-const BASE_URL = 'http://localhost:8000/api'
+const BASE_URL = `${API_BASE_URL}/api`
+
 const displayedPokemon = ref([])
 const hoveredPokemon = ref(null)
 

@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFetch } from '@vueuse/core'
+import { API_BASE_URL } from '@/config'
+
 
 const username = ref('')
 const password = ref('')
@@ -11,7 +13,7 @@ const router = useRouter()
 async function register() {
   try {
     const { data: regData, statusCode: regStatus } = await useFetch(
-      'http://localhost:8000/register',
+      `${API_BASE_URL}/register`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -31,13 +33,14 @@ async function register() {
     }
 
     const { data: loginData, statusCode: loginStatus } = await useFetch(
-      'http://localhost:8000/token',
+      `${API_BASE_URL}/token`,
       {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       },
     )
+
       .post(
         new URLSearchParams({
           username: username.value,

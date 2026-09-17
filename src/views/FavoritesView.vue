@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import { useFetch } from '@vueuse/core'
+import { API_BASE_URL } from '@/config'
 
 const favorites = ref([])
 const detailedFavorites = ref([])
@@ -48,7 +49,7 @@ async function fetchFavorites() {
   if (!token) return
 
   try {
-    const { data, statusCode } = await useFetch('http://localhost:8000/api/favorites', {
+    const { data, statusCode } = await useFetch(`${API_BASE_URL}/api/favorites`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -68,7 +69,7 @@ async function fetchFavorites() {
 async function loadDetails(favs) {
   const promises = favs.map(async (fav) => {
     try {
-      const { data, statusCode } = await useFetch(`http://localhost:8000/api/pokemon/${fav.pokemon_name}`).get().json()
+      const { data, statusCode } = await useFetch(`${API_BASE_URL}/api/pokemon/${fav.pokemon_name}`).get().json()
       if (statusCode.value === 200) {
         return {
           id_fav: fav.id,
@@ -95,7 +96,7 @@ async function removeFavorite(pokemon_name) {
   if (!token) return
 
   try {
-    const { statusCode } = await useFetch(`http://localhost:8000/api/favorites/${pokemon_name}`, {
+    const { statusCode } = await useFetch(`${API_BASE_URL}/api/favorites/${pokemon_name}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -109,6 +110,7 @@ async function removeFavorite(pokemon_name) {
     console.error('Error removing favorite:', error)
   }
 }
+
 
 onMounted(() => {
   fetchFavorites()

@@ -1,6 +1,8 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useFetch } from '@vueuse/core'
+import { API_BASE_URL } from '@/config'
+
 
 const search_bar = ref('')
 const name = ref(null)
@@ -14,7 +16,8 @@ const shiny_toggle = ref(null)
 const stats_graph = ref(null)
 const evolution_line = ref(null)
 
-const BASE_URL = 'http://localhost:8000/api'
+const BASE_URL = `${API_BASE_URL}/api`
+
 let currentData = { default_image: '/default-img.jpg', shiny_image: '/shiny-img.jpg' }
 let loading = ref(false)
 let timer = null

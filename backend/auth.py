@@ -17,12 +17,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 _env_key = os.getenv("SECRET_KEY")
-if not _env_key or _env_key == "cambiame-por-una-clave-segura":
-    SECRET_KEY = secrets.token_urlsafe(32)
-else:
-    SECRET_KEY = _env_key
+SECRET_KEY = _env_key if _env_key else "super-secret-key-change-this-in-production-12345"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
