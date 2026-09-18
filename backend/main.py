@@ -26,11 +26,27 @@ POKEAPI_BASE_URL = "https://pokeapi.co/api/v2"
 
 @app.post("/register", response_model=schemas.User)
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    if len(user.password) < 8:
+        raise HTTPException(status_code=400, detail="La contraseña debe tener al menos 8 caracteres")
+    
+    if not user.username.strip() or not user.last_name.strip() or not user.email.strip():
+        raise HTTPException(status_code=400, detail="Todos los campos son requeridos")
+
     db_user = auth.get_user(db, username=user.username)
     if db_user:
-        raise HTTPException(status_code=400, detail="Username already registered")
+        raise HTTPException(status_code=400, detail="El nombre de usuario ya está registrado")
+    
+    db_email = db.query(models.User).filter(models.User.email == user.email).first()
+    if db_email:
+        raise HTTPException(status_code=400, detail="El correo electrónico ya está registrado")
+
     hashed_password = auth.get_password_hash(user.password)
-    db_user = models.User(username=user.username, hashed_password=hashed_password)
+    db_user = models.User(
+        username=user.username,
+        last_name=user.last_name,
+        email=user.email,
+        hashed_password=hashed_password
+    )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

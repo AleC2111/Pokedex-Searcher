@@ -4,13 +4,32 @@ import { useRouter } from 'vue-router'
 import { useFetch } from '@vueuse/core'
 import { API_BASE_URL } from '@/config'
 
-
 const username = ref('')
+const lastName = ref('')
+const email = ref('')
 const password = ref('')
+const confirmPassword = ref('')
 const errorMsg = ref('')
 const router = useRouter()
 
 async function register() {
+  errorMsg.value = ''
+
+  if (!username.value.trim() || !lastName.value.trim() || !email.value.trim() || !password.value || !confirmPassword.value) {
+    errorMsg.value = 'Todos los campos son obligatorios.'
+    return
+  }
+
+  if (password.value.length < 8) {
+    errorMsg.value = 'La contraseña debe tener al menos 8 caracteres.'
+    return
+  }
+
+  if (password.value !== confirmPassword.value) {
+    errorMsg.value = 'Las contraseñas no coinciden.'
+    return
+  }
+
   try {
     const { data: regData, statusCode: regStatus } = await useFetch(
       `${API_BASE_URL}/register`,
@@ -23,6 +42,8 @@ async function register() {
       .post(
         JSON.stringify({
           username: username.value,
+          last_name: lastName.value,
+          email: email.value,
           password: password.value,
         }),
       )
@@ -40,7 +61,6 @@ async function register() {
         },
       },
     )
-
       .post(
         new URLSearchParams({
           username: username.value,
@@ -65,13 +85,16 @@ async function register() {
 <template>
   <div class="auth-container">
     <h2>Registro</h2>
-    <div class="text-container form-box">
-      <input v-model="username" placeholder="Usuario" type="text" />
-      <input v-model="password" placeholder="Contraseña" type="password" />
-      <button @click="register">Registrarse</button>
+    <form @submit.prevent="register" class="text-container form-box">
+      <input v-model="username" placeholder="Nombre de usuario" type="text" required />
+      <input v-model="lastName" placeholder="Apellido" type="text" required />
+      <input v-model="email" placeholder="Correo electrónico" type="email" required />
+      <input v-model="password" placeholder="Contraseña (mín. 8 caracteres)" type="password" minlength="8" required />
+      <input v-model="confirmPassword" placeholder="Confirmar contraseña" type="password" minlength="8" required />
+      <button type="submit">Registrarse</button>
       <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
       <p>¿Ya tienes cuenta? <router-link to="/login">Inicia Sesión</router-link></p>
-    </div>
+    </form>
   </div>
 </template>
 
@@ -86,32 +109,40 @@ async function register() {
 .form-box {
   display: flex;
   flex-direction: column;
-  width: 300px;
+  width: 320px;
   align-items: center;
 }
 
 input {
-  margin: 10px;
-  padding: 8px;
-  width: 90%;
-  border-radius: 3px;
+  margin: 8px 0;
+  padding: 10px;
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
 button {
   background-color: #f76998;
-  margin: 10px;
-  padding: 8px 16px;
+  color: white;
+  margin: 12px 0;
+  padding: 10px 20px;
+  border: none;
   border-radius: 5px;
-  transition: scale 0.2s ease-in;
+  font-weight: bold;
+  transition: transform 0.2s ease-in;
   cursor: pointer;
+  width: 100%;
 }
 
 button:hover {
-  scale: 1.1;
+  transform: scale(1.03);
 }
 
 .error {
-  color: red;
+  color: #d9534f;
   font-size: 0.9rem;
+  margin-top: 5px;
+  text-align: center;
 }
 </style>
